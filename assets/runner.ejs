@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+
+<script 
+src="/mod/neuron/3.1.0/neuron.js" 
+id="neuron-js" 
+data-path="/mod"></script>
+
+<link rel="stylesheet" href="tool/mocha.css" />
+<script src="./tool/chai.js"></script>
+<script src="./tool/mocha.js"></script>
+<script src="./tool/sinon.js"></script>
+
+</head>
+
+<body>
+
+<div id="mocha"></div>
+
+<script>
+
+var assert = chai.assert;
+var expect = chai.expect;
+
+chai.should();
+mocha.NO_CATCH_EXCEPTIONS = true;
+!window.PHANTOMJS && mocha.setup("bdd");
+
+</script>
+<script>
+
+define('<%=name%>', [<%=deps.map(function(dep){return "'"+dep.name+"@"+dep.version+"'"}).join(",")%>], function(require, exports, module) {
+
+    <% deps.forEach(function(dep){ %>
+    var <%=dep.name%> = require("<%=dep.name%>");
+    <% }); %>
+
+    <% specs.forEach(function(spec){
+        <%= spec %>
+    <% }); %>
+
+});
+
+_use(["<%=name%>"],function(){
+	mocha.run();
+});
+
+</script>
+
+</body>
+
+</html>

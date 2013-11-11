@@ -1,0 +1,30 @@
+{
+  "name": "cortex-test",
+  "version": "0.0.1",
+  "description": "run test for cortex projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "cortex-test": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cortexjs/cortex-test.git"
+  },
+  "author": "spud",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/cortexjs/cortex-test/issues"
+  },
+  "dependencies": {
+    "ejs": "~0.8.4",
+    "commander": "~2.0.0",
+    "hum": "~2.1.7",
+    "fs-sync": "~0.2.4",
+    "path-extra": "~0.1.1",
+    "multi-profile": "~3.1.1",
+    "put-in": "0.0.2"
+  }
+}
