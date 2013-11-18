@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "run test for cortex projects",
   "main": "index.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "fs-sync": "~0.2.4",
     "path-extra": "~0.1.1",
     "multi-profile": "~3.1.1",
-    "put-in": "0.0.2"
+    "put-in": "0.0.2",
+    "nodepath": "0.0.1"
   }
 }
