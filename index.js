@@ -27,7 +27,6 @@ function buildPage(done){
         cwd : cwd,
         allowNotInstalled: true
     },argv),function(err,result){
-        logger.info("ok");
         done(err, result.path);
     });
 }

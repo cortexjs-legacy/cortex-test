@@ -37,6 +37,8 @@
     "mkdirp": "^0.5.0",
     "underscore": "^1.6.0",
     "temp": "^0.7.0",
-    "browserman-client": "0.0.2"
+    "browserman-client": "0.0.2",
+    "mocha": "^1.18.2",
+    "columnify": "^0.1.2"
   }
 }
