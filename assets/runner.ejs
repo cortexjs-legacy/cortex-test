@@ -1,53 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <title>Mbox</title>
+    <% if(locals.mode == "local"){ %>
 
-<script 
-src="/mod/neuron/3.1.0/neuron.js" 
-id="neuron-js" 
-data-path="/mod"></script>
+    <script src="assets/mocha.js"></script>
+    <script src="neurons/neuron/5.0.0/neuron.js"></script>
+    <script>
+        neuron.config({
+            path:"neurons"
+        });
+    </script>
+    <link rel="stylesheet" href="assets/mocha.css">
 
-<link rel="stylesheet" href="tool/mocha.css" />
-<script src="./tool/chai.js"></script>
-<script src="./tool/mocha.js"></script>
-<script src="./tool/sinon.js"></script>
+    <% }else{ %>
 
+    <script src="http://browserman.dp:9000/public/js/build/lib/mocha.js"></script>
+    <script src="<%= server %>/mod/neuron/5.0.0/neuron.js"></script>
+    <script>
+        neuron.config({
+            path:"<%= server %>/mod/"
+        });
+    </script>
+    <link rel="stylesheet" href="http://cdn.staticfile.org/mocha/1.18.2/mocha.min.css">
+
+    <% } %>
 </head>
-
 <body>
+    <div id="mocha"></div>
 
-<div id="mocha"></div>
+    <script>
 
-<script>
+    mocha.NO_CATCH_EXCEPTIONS = true;
+    !window.PHANTOMJS && mocha.setup("bdd");
 
-var assert = chai.assert;
-var expect = chai.expect;
+    <%- scripts %>
+    define("<%- name %>@latest/test",<%- JSON.stringify(tests) %>,function(require, exports, module){
+        <% tests.forEach(function(test){ %>
+            require("<%- test %>")
+        <% }); %>
+    });
 
-chai.should();
-mocha.NO_CATCH_EXCEPTIONS = true;
-!window.PHANTOMJS && mocha.setup("bdd");
+    _use("<%- name %>@latest/test",function(){
+        mocha.run();
+    });
 
-</script>
-<script>
 
-define('<%=name%>', [<%=deps.map(function(dep){return "'"+dep.name+"@"+dep.version+"'"}).join(",")%>], function(require, exports, module) {
-
-    <% deps.forEach(function(dep){ %>
-    var <%=dep.name%> = require("<%=dep.name%>");
-    <% }); %>
-
-    <% specs.forEach(function(spec){
-        <%= spec %>
-    <% }); %>
-
-});
-
-_use(["<%=name%>"],function(){
-	mocha.run();
-});
-
-</script>
-
+    </script>
 </body>
-
 </html>

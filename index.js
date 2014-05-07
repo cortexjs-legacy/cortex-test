@@ -1,58 +1,47 @@
 #!/usr/bin/env node
+var argv = require('optimist').argv;
+var path = require('path');
+var fs = require('fs');
+var logger = require('./lib/logger');
+var jf = require('jsonfile');
+var async = require('async');
+var runners = require('./lib/runners');
+var _ = require('underscore');
 
-var program = require('commander');
-var hum = require("hum");
-var ejs = require("ejs");
-var fs_sync = require("fs-sync");
-var path_extra = require("path-extra");
-var node_path = require("path");
-var putin = require("put-in");
-var multi_profile = require("multi-profile");
+var cwd = argv.cwd || process.cwd();
 
-var profile = multi_profile({
-    path            : "~/.cortex", 
-    schema          : {
-        builder         : {
-            value       : 'neuron',
-            type        : {
-                validator : function (v) {
-                    return typeof v === 'string' && v.trim() !== '';
-                }
-            }
-        }
-    }
-}).init();
+var builder = require("./lib/builder");
 
+var mode = argv.remote ? "remote" : "local";
 
-var pkg = fs_sync.readJSON( node_path.join(process.cwd(),"package.json") );
-
-var builder = profile.get('builder');
-
-
-var pkg_name = "grunt-cortex-" + builder + "-test";
-
-function run_task(task_dir){
-    var init_config = {};
-    init_config[builder + "-test"] = {all:{}};
-    var hum_instance = hum({
-        path: node_path.join(task_dir,"node_modules")
-    })
-    .npmTasks(pkg_name)
-    .task(builder + "-test")
-    .init(init_config)
-    .options({
-        force: true
-    }).done(function(err){});
+function readPackage(cwd){
+    var json_path = path.join(cwd, "cortex.json");
+    return jf.readFileSync(json_path);
 }
 
-require("nodepath").get(function(NODE_LIB_PATH){
-    var task_dir = node_path.join(NODE_LIB_PATH,"lib");
-    console.log("tsk dir",task_dir);
-    if(fs_sync.exists(node_path.join(task_dir,"node_modules",pkg_name))){
-        run_task(task_dir);
-    }else{
-        putin(task_dir).install(pkg_name, function(){
-            run_task(task_dir)
-        });
-    }
-});
+function buildPage(done){
+    builder.build( _.extend({
+        mode: mode,
+        pkg : readPackage(cwd),
+        targetVersion : "latest",
+        cwd : cwd,
+        allowNotInstalled: true
+    },argv),function(err,result){
+        logger.info("ok");
+        done(err, result.path);
+    });
+}
+
+function testPage(path, done){
+    var option = _.extend({
+        cwd: cwd,
+        path: path
+    },argv);
+
+    runners[mode].test(option);
+}
+
+
+
+logger.info("cortex test in %s mode",mode);
+async.waterfall([buildPage,testPage]);

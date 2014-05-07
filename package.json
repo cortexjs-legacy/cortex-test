@@ -19,13 +19,24 @@
     "url": "https://github.com/cortexjs/cortex-test/issues"
   },
   "dependencies": {
-    "ejs": "~0.8.4",
+    "ejs": "^0.8.8",
     "commander": "~2.0.0",
     "hum": "~2.1.7",
     "fs-sync": "~0.2.4",
     "path-extra": "~0.1.1",
     "multi-profile": "~3.1.1",
     "put-in": "0.0.2",
-    "nodepath": "0.0.1"
+    "nodepath": "0.0.1",
+    "connect": "^2.15.0",
+    "optimist": "^0.6.1",
+    "jsonfile": "^1.1.1",
+    "neuron-builder": "^0.1.5",
+    "async": "^0.8.0",
+    "winston": "^0.7.3",
+    "glob": "^3.2.9",
+    "mkdirp": "^0.5.0",
+    "underscore": "^1.6.0",
+    "temp": "^0.7.0",
+    "browserman-client": "0.0.2"
   }
 }
