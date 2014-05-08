@@ -12,11 +12,20 @@ var cwd = argv.cwd || process.cwd();
 
 var builder = require("./lib/builder");
 
-var mode = argv.remote ? "remote" : "local";
+var mode = argv.mode || "local";
+var required_args = runners[mode].args || [];
 
 function readPackage(cwd){
     var json_path = path.join(cwd, "cortex.json");
     return jf.readFileSync(json_path);
+}
+
+function containsInArgv(arg){
+    return arg in argv;
+}
+
+function printRequiredArg(arg){
+    console.log("required arg --%s for mode `%s`".grey, arg, mode);
 }
 
 function buildPage(done){
@@ -41,6 +50,10 @@ function testPage(path, done){
 }
 
 
+if(!required_args.every(containsInArgv)){
+    required_args.forEach(printRequiredArg);
+    process.exit(1);
+}
 
 logger.info("cortex test in %s mode",mode);
 async.waterfall([buildPage,testPage]);
