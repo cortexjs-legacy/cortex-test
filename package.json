@@ -20,13 +20,6 @@
   },
   "dependencies": {
     "ejs": "^0.8.8",
-    "commander": "~2.0.0",
-    "hum": "~2.1.7",
-    "fs-sync": "~0.2.4",
-    "path-extra": "~0.1.1",
-    "multi-profile": "~3.1.1",
-    "put-in": "0.0.2",
-    "nodepath": "0.0.1",
     "connect": "^2.15.0",
     "optimist": "^0.6.1",
     "jsonfile": "^1.1.1",
@@ -37,8 +30,7 @@
     "mkdirp": "^0.5.0",
     "underscore": "^1.6.0",
     "temp": "^0.7.0",
-    "browserman-client": "0.0.2",
-    "mocha": "^1.18.2",
-    "columnify": "^0.1.2"
+    "colors": "^0.6.2",
+    "browserman-client": "0.0.3"
   }
 }
