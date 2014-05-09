@@ -6,8 +6,9 @@
     <% if(locals.mode == "local"){ %>
 
     <script src="assets/mocha.js"></script>
-    <script src="neurons/neuron/5.0.0/neuron.js"></script>
+    <script src="assets/neuron-5.0.0.js"></script>
     <script>
+        var global = window;
         neuron.config({
             path:"neurons"
         });

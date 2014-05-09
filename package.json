@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "run test for cortex projects",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,8 @@
     "underscore": "^1.6.0",
     "temp": "^0.7.0",
     "colors": "^0.6.2",
-    "browserman-client": "0.0.3"
+    "browserman-client": "0.0.3",
+    "cortex-profile": "^1.0.0",
+    "read-cortex-json": "^0.1.0"
   }
 }

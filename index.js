@@ -7,6 +7,8 @@ var jf = require('jsonfile');
 var async = require('async');
 var runners = require('./lib/runners');
 var _ = require('underscore');
+var readPackageJson = require("read-cortex-json");
+
 
 var cwd = argv.cwd || process.cwd();
 
@@ -15,10 +17,7 @@ var builder = require("./lib/builder");
 var mode = argv.mode || "local";
 var required_args = runners[mode].args || [];
 
-function readPackage(cwd){
-    var json_path = path.join(cwd, "cortex.json");
-    return jf.readFileSync(json_path);
-}
+var readPackage = readPackageJson.get_original_package;
 
 function containsInArgv(arg){
     return arg in argv;
@@ -29,14 +28,17 @@ function printRequiredArg(arg){
 }
 
 function buildPage(done){
-    builder.build( _.extend({
-        mode: mode,
-        pkg : readPackage(cwd),
-        targetVersion : "latest",
-        cwd : cwd,
-        allowNotInstalled: true
-    },argv),function(err,result){
-        done(err, result.path);
+    readPackage(cwd, function(err, pkg){
+        if(err){return done(err);}
+        builder.build( _.extend({
+            mode: mode,
+            pkg : pkg,
+            targetVersion : "latest",
+            cwd : cwd,
+            allowNotInstalled: true
+        },argv),function(err,result){
+            done(err, result && result.path);
+        });
     });
 }
 
@@ -56,4 +58,9 @@ if(!required_args.every(containsInArgv)){
 }
 
 logger.info("cortex test in %s mode",mode);
-async.waterfall([buildPage,testPage]);
+async.waterfall([buildPage,testPage],function(err){
+    if(err){
+        logger.error(err);
+        process.exit(1);
+    }
+});
