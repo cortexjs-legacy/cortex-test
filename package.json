@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "run test for cortex projects",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "connect": "^2.15.0",
     "optimist": "^0.6.1",
     "jsonfile": "^1.1.1",
-    "neuron-builder": "^0.1.5",
+    "neuron-builder": "^0.1.6",
     "async": "^0.8.0",
     "winston": "^0.7.3",
     "glob": "^3.2.9",

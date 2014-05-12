@@ -34,8 +34,7 @@ function buildPage(done){
             mode: mode,
             pkg : pkg,
             targetVersion : "latest",
-            cwd : cwd,
-            allowNotInstalled: true
+            cwd : cwd
         },argv),function(err,result){
             done(err, result && result.path);
         });
@@ -60,7 +59,7 @@ if(!required_args.every(containsInArgv)){
 logger.info("cortex test in %s mode",mode);
 async.waterfall([buildPage,testPage],function(err){
     if(err){
-        logger.error(err);
+        logger.error(err.message || err);
         process.exit(1);
     }
 });
