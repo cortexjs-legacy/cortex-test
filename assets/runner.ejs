@@ -17,14 +17,14 @@
 
     <% }else{ %>
 
-    <script src="http://browserman.dp:9000/public/js/build/lib/mocha.js"></script>
-    <script src="<%= server %>/mod/neuron/5.0.0/neuron.js"></script>
+    <script src="<%= root %>/mocha/1.18.2/mocha.js"></script>
+    <script src="<%= root %>/neuron/5.0.0/neuron.js"></script>
     <script>
         neuron.config({
-            path:"<%= server %><%= modpath %>"
+            path:"<%= root %>"
         });
     </script>
-    <link rel="stylesheet" href="http://cdn.staticfile.org/mocha/1.18.2/mocha.min.css">
+    <link rel="stylesheet" href="<%= root %>/mocha/1.18.2/mocha.css">
 
     <% } %>
 </head>

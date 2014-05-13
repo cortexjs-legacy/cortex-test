@@ -1,11 +1,25 @@
 #!/usr/bin/env node
-var argv = require('optimist').argv;
+var program = require('optimist')
+    .usage('Count the lines in a file.\nUsage: $0')
+    .alias("R","reporter")
+    .describe("R","test reporter")
+    .default("R","base")
+    .alias("m","mode")
+    .default("m","local")
+    .alias("r","root")
+    .describe("r","static root, such as `http://i2.dpfile.com/mod`")
+    .alias("b","browser")
+    .describe("b","browser list, such as `firefox,chrome,ie@>8.0.0`")
+    .alias("V","verbose")
+    .describe("V","see verbose info")
+    .alias("H","help")
+    .describe("H");
+var argv = program.argv;
 var path = require('path');
 var fs = require('fs');
 var logger = require('./lib/logger');
 var jf = require('jsonfile');
 var async = require('async');
-var runners = require('./lib/runners');
 var _ = require('underscore');
 var readPackageJson = require("read-cortex-json");
 
@@ -14,17 +28,14 @@ var cwd = argv.cwd || process.cwd();
 
 var builder = require("./lib/builder");
 
-var mode = argv.mode || "local";
-var required_args = runners[mode].args || [];
+var mode = argv.mode;
+
+var runner = mode == "local" ? require("./lib/runners/local") : require("cortex-test-" + mode + "-adapter");
 
 var readPackage = readPackageJson.get_original_package;
 
 function containsInArgv(arg){
     return arg in argv;
-}
-
-function printRequiredArg(arg){
-    console.log("required arg --%s for mode `%s`".grey, arg, mode);
 }
 
 function buildPage(done){
@@ -41,25 +52,57 @@ function buildPage(done){
     });
 }
 
-function testPage(path, done){
+function testPage(htmlpath, done){
     var option = _.extend({
         cwd: cwd,
-        path: path
+        path: htmlpath
     },argv);
+    var test;
 
-    runners[mode].test(option);
+
+    if(mode == "local"){
+        runner.test(option);
+        return;
+    }else{
+        test = runner(option)
+            .on('error',function(err){
+                logger.error(err);
+                done(err);
+            })
+            .on('log', function(info){
+                logger.verbose(info);
+            })
+            .test();
+
+
+        var Reporter = loadReporter();
+        new Reporter(test);
+    }
+}
+
+function loadReporter(){
+    var name = argv.reporter;
+    var reporter;
+
+    try{
+        reporter = require("./lib/reporters/" + name);
+    }catch(e){
+        reporter = require("cortex-test-" + name + "-reporter");
+    }
+    return reporter;
 }
 
 
-if(!required_args.every(containsInArgv)){
-    required_args.forEach(printRequiredArg);
-    process.exit(1);
+if(argv.help){
+    process.stdout.write(program.help());
+    return;
 }
 
 logger.info("cortex test in %s mode",mode);
 async.waterfall([buildPage,testPage],function(err){
     if(err){
         logger.error(err.message || err);
+        logger.error(err.stack);
         process.exit(1);
     }
 });

@@ -1,10 +1,10 @@
 {
   "name": "cortex-test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "run test for cortex projects",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha test"
   },
   "bin": {
     "cortex-test": "index.js"
@@ -33,6 +33,13 @@
     "colors": "^0.6.2",
     "browserman-client": "0.0.3",
     "cortex-profile": "^1.0.0",
-    "read-cortex-json": "^0.1.0"
+    "read-cortex-json": "^0.1.0",
+    "cortex-test-browserman-adapter": "^0.1.0"
+  },
+  "devDependencies": {
+    "connect": "^2.15.0",
+    "chai": "^1.9.1",
+    "mocha": "^1.18.2",
+    "express": "^4.2.0"
   }
 }
