@@ -10,12 +10,14 @@ var program = require('optimist')
     .describe("r","static root, such as `http://i2.dpfile.com/mod`")
     .alias("b","browser")
     .describe("b","browser list, such as `firefox,chrome,ie@>8.0.0`")
-    .alias("V","version")
-    .describe("V","check version")
-    .describe("v")
+    .alias("V","verbose")
+    .describe("V")
+    .alias("v","version")
+    .describe("v","check version")
     .alias("h","help")
     .describe("h");
 var argv = program.argv;
+var util = require('util');
 var path = require('path');
 var fs = require('fs');
 var logger = require('./lib/logger');
@@ -24,14 +26,11 @@ var async = require('async');
 var _ = require('underscore');
 var readPackageJson = require("read-cortex-json");
 
-
 var cwd = argv.cwd || process.cwd();
 
 var builder = require("./lib/builder");
 
 var mode = argv.mode;
-
-var runner = mode == "local" ? require("./lib/runners/local") : require("cortex-test-" + mode + "-adapter");
 
 var readPackage = readPackageJson.get_original_package;
 
@@ -60,37 +59,66 @@ function testPage(htmlpath, done){
     },argv);
     var test;
 
+    var runner;
 
+    loadRunner(function(err,runner){
+        if(err){return done(err);}
+
+        if(mode == "local"){
+            runner.test(option);
+            return;
+        }else{
+            test = runner(option)
+                .on('error',function(err){
+                    logger.error(err);
+                    done(err);
+                })
+                .on('log', function(info){
+                    logger.verbose(info);
+                })
+                .test();
+
+        
+            loadReporter(function(err,Reporter){
+                if(err){return done(err);}
+                new Reporter(test); 
+            });
+        }
+
+
+    });
+
+}
+
+
+function loadModule(type,name,callback){
+    var module_name = "cortex-test-" + name + "-" + type;
+    try{
+        module = require(module_name);
+    }catch(e){
+        try{
+            module = require(path.join(cwd,"node_modules",module_name));
+        }catch(e){
+            return callback(new Error(util.format("%s \"%s\" not found. type `npm install %s --save-dev` to install.",type,name,module_name)));
+        }
+    }
+    callback(null,module);
+}
+
+function loadRunner(callback){
     if(mode == "local"){
-        runner.test(option);
-        return;
+        callback(null,require("./lib/runners/local"));
     }else{
-        test = runner(option)
-            .on('error',function(err){
-                logger.error(err);
-                done(err);
-            })
-            .on('log', function(info){
-                logger.verbose(info);
-            })
-            .test();
-
-
-        var Reporter = loadReporter();
-        new Reporter(test);
+        loadModule("adapter",mode,callback);
     }
 }
 
-function loadReporter(){
-    var name = argv.reporter;
-    var reporter;
-
-    try{
-        reporter = require("./lib/reporters/" + name);
-    }catch(e){
-        reporter = require("cortex-test-" + name + "-reporter");
+function loadReporter(callback){
+    var reporter = argv.reporter;
+    if(reporter == "base"){
+        return callback(null, require("./lib/reporters/base"))
     }
-    return reporter;
+    loadModule("reporter",argv.reporter,callback);
 }
 
 
@@ -107,8 +135,7 @@ if(argv.help){
 logger.info("cortex test in %s mode",mode);
 async.waterfall([buildPage,testPage],function(err){
     if(err){
-        logger.error(err.message || err);
-        logger.error(err.stack);
+        logger.error(err.stack || err.message || err);
         process.exit(1);
     }
 });
