@@ -99,7 +99,7 @@ function loadModule(type,name,callback){
         try{
             module = require(path.join(cwd,"node_modules",module_name));
         }catch(e){
-            return callback(new Error(util.format("%s \"%s\" not found. type `npm install %s --save-dev` to install.",type,name,module_name)));
+            return callback(new Error(util.format("%s \"%s\" not found.\nType `npm install %s --save-dev` to install.",type,name,module_name)));
         }
     }
     callback(null,module);
