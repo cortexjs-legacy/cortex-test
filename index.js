@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var program = require('optimist')
-    .usage('Count the lines in a file.\nUsage: $0')
+    .usage('test your cortex module against multi browsers')
     .alias("R","reporter")
     .describe("R","test reporter")
     .default("R","base")
@@ -10,10 +10,11 @@ var program = require('optimist')
     .describe("r","static root, such as `http://i2.dpfile.com/mod`")
     .alias("b","browser")
     .describe("b","browser list, such as `firefox,chrome,ie@>8.0.0`")
-    .alias("V","verbose")
-    .describe("V","see verbose info")
-    .alias("H","help")
-    .describe("H");
+    .alias("V","version")
+    .describe("V","check version")
+    .describe("v")
+    .alias("h","help")
+    .describe("h");
 var argv = program.argv;
 var path = require('path');
 var fs = require('fs');
@@ -93,8 +94,13 @@ function loadReporter(){
 }
 
 
+if(argv.version){
+    console.log(require("./package.json").version);
+    return;
+}
+
 if(argv.help){
-    process.stdout.write(program.help());
+    console.log(program.help());
     return;
 }
 
