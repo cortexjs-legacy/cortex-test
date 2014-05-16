@@ -52,3 +52,7 @@ you will see:
       ✓ should be able to open multi mboxes
 
         3 passing
+
+###Learn more
+  [Implements your own adapter]("docs/writing-an-adapter.md")
+
