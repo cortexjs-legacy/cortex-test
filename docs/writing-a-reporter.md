@@ -10,7 +10,7 @@
 
 you should handle events to print funny things to your terminal. and assure to exit with correct code on `complete`.
 
-see [Writing an adapter]("writing-an-adapter.md#the-runner-instance") to learn the data structure for events
+see [Writing an adapter](writing-an-adapter.md#the-runner-instance) to learn the data structure for events
 
 ##Sample code from built-in BaseReporter
 ```js
