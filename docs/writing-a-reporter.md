@@ -4,7 +4,7 @@
 ##Naming
 
     your package should be name as `cortex-test-<name>-reporter`.
-    then it will be use by `cortex test --reporter <name>`
+    after `npm install cortex-test-<name>-reporter -g` it can be use by `--reporter <name>`.
 
 ##Handle events
 

@@ -5,7 +5,7 @@
 ##Naming
     
     your package should be name as `cortex-test-<name>-adapter`.
-    then it will be use by `cortex test --mode <name>` 
+    after `npm install cortex-test-<name>-adapter -g` it can be use by `--mode <name>`.
 
 ##Read options from `cortex-test` command
     
