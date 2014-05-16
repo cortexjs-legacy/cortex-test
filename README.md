@@ -54,5 +54,6 @@ you will see:
         3 passing
 
 ###Learn more
-  [Implements your own adapter]("docs/writing-an-adapter.md")
+  [Writing an adapter]("docs/writing-an-adapter.md")
+  [Writing a reporter]("docs/writing-a-reporter.md")
 

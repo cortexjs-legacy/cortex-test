@@ -1,4 +1,4 @@
-#Write an adapter
+#Writing an adapter
 
 `cortex-test` adapter is used to run the built page against one browser or more, and give reports to your command line. 
 
