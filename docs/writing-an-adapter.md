@@ -26,9 +26,9 @@
 
     ```js
     MyAdapter.prototype.test = function(){
-        var test = new Test();
+        var testRunner = new Runner();
         // an test instance should be returned
-        return test;
+        return testRunner;
     }
     ```
 
@@ -40,7 +40,7 @@ will cause `cortex-test` to print in `verbose` mode
 
 will cause `cortex-test` to print in error message
 
-##The "Test" instance
+##The "Runner" instance
 
 should implements the events given below, so our reporter can be feeded happily.
 
