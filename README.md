@@ -6,10 +6,9 @@
     Options:
       -R, --reporter  test reporter                                     [default: "base"]
       -r, --root      static root, such as `http://i2.dpfile.com/mod`
-      -b, --browser   browser list, such as `firefox,chrome,ie@>8.0.0`
       -V, --verbose   see verbose info
       -H, --help
-      -m, --mode                                                        [default: "local"]                                                      [default: "local"]
+      -m, --mode                                                        [default: "local"]
         
 ###Run in local mode
 
@@ -19,8 +18,8 @@ your browser will open on `http://127.0.0.1:1976/`. you can check mocha tests on
 
 
 ###Multi browser test with browserman:
-
-    cortex test -m browserman -r http://i2.static.dp/mod -b "firefox,chrome,internet explorer@>8.0.0"
+    npm install cortex-test-browserman-adapter -g
+    cortex test -m browserman -r http://i2.static.dp/mod --browser "firefox,chrome,internet explorer@>8.0.0"
     
 you will see:
 
