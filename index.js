@@ -8,8 +8,6 @@ var program = require('optimist')
     .default("m","local")
     .alias("r","root")
     .describe("r","static root, such as `http://i2.dpfile.com/mod`")
-    .alias("b","browser")
-    .describe("b","browser list, such as `firefox,chrome,ie@>8.0.0`")
     .alias("V","verbose")
     .describe("V")
     .alias("v","version")
@@ -99,7 +97,10 @@ function loadModule(type,name,callback){
         try{
             module = require(path.join(cwd,"node_modules",module_name));
         }catch(e){
-            return callback(new Error(util.format("%s \"%s\" not found.\nType `npm install %s --save-dev` to install.",type,name,module_name)));
+            return callback(
+                new Error(
+                    util.format("%s \"%s\" not found.\n"
+                        + "Type `npm install %s -g` to install.\n",type,name,module_name,module_name)));
         }
     }
     callback(null,module);
