@@ -14,6 +14,7 @@ var program = require('optimist')
     .describe("v","check version")
     .alias("h","help")
     .describe("h");
+
 var argv = program.argv;
 var util = require('util');
 var path = require('path');
@@ -22,6 +23,7 @@ var logger = require('./lib/logger');
 var jf = require('jsonfile');
 var async = require('async');
 var _ = require('underscore');
+var glob = require('glob');
 var readPackageJson = require("read-cortex-json");
 
 var cwd = argv.cwd || process.cwd();
@@ -36,18 +38,21 @@ function containsInArgv(arg){
     return arg in argv;
 }
 
-function buildPage(done){
+function buildPage(file){
+    return function(done){
     readPackage(cwd, function(err, pkg){
         if(err){return done(err);}
         builder.build( _.extend({
             mode: mode,
             pkg : pkg,
+            file: file,
             targetVersion : "latest",
             cwd : cwd
         },argv),function(err,result){
             done(err, result && result.path);
         });
     });
+    }
 }
 
 function testPage(htmlpath, done){
@@ -64,6 +69,7 @@ function testPage(htmlpath, done){
 
         if(mode == "local"){
             runner.test(option);
+            done();
             return;
         }else{
             test = runner(option)
@@ -76,10 +82,10 @@ function testPage(htmlpath, done){
                 })
                 .test();
 
-        
+
             loadReporter(function(err,Reporter){
                 if(err){return done(err);}
-                new Reporter(test); 
+                new Reporter(test);
             });
         }
 
@@ -134,9 +140,17 @@ if(argv.help){
 }
 
 logger.info("cortex test in %s mode",mode);
-async.waterfall([buildPage,testPage],function(err){
-    if(err){
-        logger.error(err.stack || err.message || err);
-        process.exit(1);
-    }
+
+glob(cwd+'/test/**/*.js',function(err,matches){
+    async.series(matches.map(function(file){
+        return function(done){
+            async.waterfall([buildPage(file),testPage],done);
+        }
+    }),function(err){
+        if(err){
+            logger.error(err.stack || err.message || err);
+            process.exit(1);
+        }
+    });
+
 });
