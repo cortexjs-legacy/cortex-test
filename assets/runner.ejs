@@ -30,12 +30,11 @@
 </head>
 <body>
     <div id="mocha"></div>
-
+    <%- html %>
     <script>
 
     mocha.NO_CATCH_EXCEPTIONS = true;
     !window.PHANTOMJS && mocha.setup("bdd");
-
     <%- scripts %>
     define("<%- name %>@latest/test",<%- JSON.stringify(tests) %>,function(require, exports, module){
         <% tests.forEach(function(test){ %>
