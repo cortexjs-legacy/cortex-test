@@ -1,18 +1,20 @@
 #!/usr/bin/env node
+
+"use strict";
 var program = require('optimist')
     .usage('test your cortex module against multi browsers')
-    .alias("R","reporter")
-    .describe("R","test reporter")
-    .default("R","base")
-    .alias("m","mode")
-    .default("m","local")
-    .alias("r","root")
-    .describe("r","static root, such as `http://i2.dpfile.com/mod`")
-    .alias("V","verbose")
+    .alias("R", "reporter")
+    .describe("R", "test reporter")
+    .default("R", "base")
+    .alias("m", "mode")
+    .default("m", "local")
+    .alias("r", "root")
+    .describe("r", "static root, such as `http://i2.dpfile.com/mod`")
+    .alias("V", "verbose")
     .describe("V")
-    .alias("v","version")
-    .describe("v","check version")
-    .alias("h","help")
+    .alias("v", "version")
+    .describe("v", "check version")
+    .alias("h", "help")
     .describe("h");
 
 var argv = program.argv;
@@ -34,122 +36,123 @@ var mode = argv.mode;
 
 var readPackage = readPackageJson.get_original_package;
 
-function containsInArgv(arg){
+var Adapter = loadAdapter();
+var Reporter = loadReporter();
+
+function containsInArgv(arg) {
     return arg in argv;
 }
 
-function buildPage(file){
-    return function(done){
-    readPackage(cwd, function(err, pkg){
-        if(err){return done(err);}
-        builder.build( _.extend({
-            mode: mode,
-            pkg : pkg,
-            file: file,
-            targetVersion : "latest",
-            cwd : cwd
-        },argv),function(err,result){
-            done(err, result && result.path);
+
+function buildPage(file) {
+    return function(done) {
+        readPackage(cwd, function(err, pkg) {
+            if (err) {
+                return done(err);
+            }
+            builder.build(_.extend({
+                build_mode: Adapter.build_mode,
+                pkg: pkg,
+                file: file,
+                targetVersion: "latest",
+                cwd: cwd
+            }, argv), function(err, result) {
+                done(err, result && result.path);
+            });
         });
-    });
     }
 }
 
-function testPage(htmlpath, done){
+function testPage(htmlpath, done) {
     var option = _.extend({
         cwd: cwd,
         path: htmlpath
-    },argv);
+    }, argv);
     var test;
 
-    var runner;
-
-    loadRunner(function(err,runner){
-        if(err){return done(err);}
-
-        if(mode == "local"){
-            runner.test(option);
-            done();
-            return;
-        }else{
-            test = runner(option)
-                .on('error',function(err){
-                    logger.error(err);
-                    done(err);
-                })
-                .on('log', function(info){
-                    logger.verbose(info);
-                })
-                .test();
-
-
-            loadReporter(function(err,Reporter){
-                if(err){return done(err);}
-                new Reporter(test);
-            });
-        }
-
-
-    });
-
+    if (mode == "local") {
+        Adapter.test(option);
+        done();
+    } else {
+        test = new Adapter(option).on('error', function(err) {
+            logger.error(err);
+        }).on('log', function(info) {
+            logger.verbose(info);
+        }).test();
+        var reporter = new Reporter(test);
+        reporter.once("done", function(fail) {
+            done(fail);
+        });
+    }
 }
 
 
-function loadModule(type,name,callback){
+function loadModule(type, name) {
     var module_name = "cortex-test-" + name + "-" + type;
-    try{
+    try {
         module = require(module_name);
-    }catch(e){
-        try{
-            module = require(path.join(cwd,"node_modules",module_name));
-        }catch(e){
-            return callback(
-                new Error(
-                    util.format("%s \"%s\" not found.\n"
-                        + "Type `npm install %s -g` to install.\n",type,name,module_name,module_name)));
+    } catch (e) {
+        try {
+            module = require(path.join(cwd, "node_modules", module_name));
+        } catch (e) {
+            throw new Error(util.format("%s \"%s\" not found.\n" + "Type `npm install %s -g` to install.\n",
+                type,
+                name,
+                module_name,
+                module_name
+            ));
         }
     }
-    callback(null,module);
+
+    return module;
 }
 
-function loadRunner(callback){
-    if(mode == "local"){
-        callback(null,require("./lib/runners/local"));
-    }else{
-        loadModule("adapter",mode,callback);
+function loadAdapter() {
+    if (mode == "local") {
+        return require("./lib/adapters/local");
+    } else {
+        return loadModule("adapter", mode);
     }
 }
 
-function loadReporter(callback){
+function loadReporter() {
     var reporter = argv.reporter;
-    if(reporter == "base"){
-        return callback(null, require("./lib/reporters/base"))
+    if (reporter == "base") {
+        return require("./lib/reporters/base");
+    } else {
+        return loadModule("reporter", argv.reporter);
     }
-    loadModule("reporter",argv.reporter,callback);
 }
 
 
-if(argv.version){
+if (argv.version) {
     console.log(require("./package.json").version);
     return;
 }
 
-if(argv.help){
+if (argv.help) {
     console.log(program.help());
     return;
 }
 
-logger.info("cortex test in %s mode",mode);
+logger.info("cortex test in %s mode", mode);
 
-glob(cwd+'/test/**/*.js',function(err,matches){
-    async.series(matches.map(function(file){
-        return function(done){
-            async.waterfall([buildPage(file),testPage],done);
-        }
-    }),function(err){
-        if(err){
+glob(cwd + '/test/**/*.js', function(err, matches) {
+    async.mapSeries(matches, function(file, done) {
+        buildPage(file)(function(err, htmlpath) {
+            if (err) {
+                return done(err);
+            }
+            testPage(htmlpath, done);
+        });
+    }, function(err) {
+        if (err) {
             logger.error(err.stack || err.message || err);
             process.exit(1);
+        } else {
+            if (mode !== "local") {
+                process.exit(0);
+            }
         }
     });
 
