@@ -14,6 +14,7 @@ var program = require('optimist')
     .describe("V")
     .alias("v", "version")
     .describe("v", "check version")
+    .describe("test-dir", "check version")
     .alias("h", "help")
     .describe("h");
 
@@ -28,21 +29,18 @@ var _ = require('underscore');
 var glob = require('glob');
 var readPackageJson = require("read-cortex-json");
 
-var cwd = argv.cwd || process.cwd();
+var tests = argv._.length ? argv._ : ["test"];
 
+var cwd = argv.cwd || process.cwd();
+var testDir = argv["test-dir"] || "test";
 var builder = require("./lib/builder");
 
 var mode = argv.mode;
 
 var readPackage = readPackageJson.get_original_package;
 
-var Adapter = loadAdapter();
-var Reporter = loadReporter();
-
-function containsInArgv(arg) {
-    return arg in argv;
-}
-
+var Adapter = loadModule("adapter", argv.mode);
+var Reporter = loadModule("reporter", argv.reporter);
 
 function buildPage(file) {
     return function(done) {
@@ -51,7 +49,7 @@ function buildPage(file) {
                 return done(err);
             }
             builder.build(_.extend({
-                build_mode: Adapter.build_mode,
+                mode: mode,
                 pkg: pkg,
                 file: file,
                 targetVersion: "latest",
@@ -66,7 +64,8 @@ function buildPage(file) {
 function testPage(htmlpath, done) {
     var option = _.extend({
         cwd: cwd,
-        path: htmlpath
+        path: htmlpath,
+        app: require(path.join(cwd, 'package.json')).name
     }, argv);
     var test;
 
@@ -90,38 +89,55 @@ function testPage(htmlpath, done) {
 function loadModule(type, name) {
     var module_name = "cortex-test-" + name + "-" + type;
     try {
-        module = require(module_name);
+        module = require("./lib/" + type + "s/" + name);
     } catch (e) {
         try {
-            module = require(path.join(cwd, "node_modules", module_name));
+            module = require(module_name);
         } catch (e) {
-            throw new Error(util.format("%s \"%s\" not found.\n" + "Type `npm install %s -g` to install.\n",
-                type,
-                name,
-                module_name,
-                module_name
-            ));
+            try {
+                module = require(path.join(cwd, "node_modules", module_name));
+            } catch (e) {
+                throw new Error(util.format("%s \"%s\" not found.\n" + "Type `npm install %s -g` to install.\n",
+                    type,
+                    name,
+                    module_name,
+                    module_name
+                ));
+            }
         }
     }
 
     return module;
 }
 
-function loadAdapter() {
-    if (mode == "local") {
-        return require("./lib/adapters/local");
-    } else {
-        return loadModule("adapter", mode);
-    }
-}
-
-function loadReporter() {
-    var reporter = argv.reporter;
-    if (reporter == "base") {
-        return require("./lib/reporters/base");
-    } else {
-        return loadModule("reporter", argv.reporter);
-    }
+function getTestFiles(callback) {
+    async.map(tests, function(test, done) {
+        var testPath = path.join(cwd, test);
+        fs.stat(testPath, function(err, stats) {
+            if (err) {
+                return done(err);
+            }
+            if (stats.isFile()) {
+                done(null, [testPath]);
+            } else if (stats.isDirectory()) {
+                glob(path.join(test, "**.js"), function(err, matches) {
+                    if (err) {
+                        return done(err);
+                    }
+                    done(null, matches.map(function(item) {
+                        return path.join(cwd, item);
+                    }));
+                });
+            } else {
+                done(null);
+            }
+        });
+    }, function(err, files) {
+        files = _.flatten(files).filter(function(file) {
+            return file;
+        });
+        callback(null, files);
+    });
 }
 
 
@@ -137,23 +153,24 @@ if (argv.help) {
 
 logger.info("cortex test in %s mode", mode);
 
-glob(cwd + '/test/**/*.js', function(err, matches) {
+getTestFiles(function(err, matches) {
     async.mapSeries(matches, function(file, done) {
-        buildPage(file)(function(err, htmlpath) {
+            logger.info("Testing", path.relative(cwd, file));
+            buildPage(file)(function(err, htmlpath) {
+                if (err) {
+                    return done(err);
+                }
+                testPage(htmlpath, done);
+            });
+        },
+        function(err) {
             if (err) {
-                return done(err);
+                logger.error(err.stack || err.message || err);
+                process.exit(1);
+            } else {
+                if (mode !== "local") {
+                    process.exit(0);
+                }
             }
-            testPage(htmlpath, done);
         });
-    }, function(err) {
-        if (err) {
-            logger.error(err.stack || err.message || err);
-            process.exit(1);
-        } else {
-            if (mode !== "local") {
-                process.exit(0);
-            }
-        }
-    });
-
 });

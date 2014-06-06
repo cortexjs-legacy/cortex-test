@@ -1,4 +1,5 @@
 #CLI
+[![Build Status](http://browserman.dp:9000/api/app/mbox/badg)](http://search.cortexjs.org/package/mbox)
 
 ###Usage:
     Usage: cortex test [options]
