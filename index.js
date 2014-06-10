@@ -19,6 +19,7 @@ var program = require('optimist')
     .describe("h");
 
 var argv = program.argv;
+var gaze = require('gaze');
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
@@ -42,7 +43,7 @@ var readPackage = readPackageJson.get_original_package;
 var Adapter = loadModule("adapter", argv.mode);
 var Reporter = loadModule("reporter", argv.reporter);
 
-function buildPage(file) {
+function buildPage(file, destPath) {
     return function(done) {
         readPackage(cwd, function(err, pkg) {
             if (err) {
@@ -52,6 +53,7 @@ function buildPage(file) {
                 mode: mode,
                 pkg: pkg,
                 file: file,
+                destPath: destPath,
                 targetVersion: "latest",
                 cwd: cwd
             }, argv), function(err, result) {
@@ -155,13 +157,23 @@ logger.info("cortex test in %s mode", mode);
 
 getTestFiles(function(err, matches) {
     async.mapSeries(matches, function(file, done) {
+            var built_html = null;
             logger.info("Testing", path.relative(cwd, file));
             buildPage(file)(function(err, htmlpath) {
                 if (err) {
                     return done(err);
                 }
+                built_html = htmlpath;
                 testPage(htmlpath, done);
             });
+            if (mode == "local") {
+                gaze(file, function() {
+                    this.on('changed', function() {
+                        console.log("changed", file);
+                        built_html && buildPage(file, built_html)(function(err) {});
+                    });
+                });
+            }
         },
         function(err) {
             if (err) {
