@@ -8,8 +8,6 @@ var program = require('optimist')
     .default("R", "base")
     .alias("m", "mode")
     .default("m", "local")
-    .alias("r", "root")
-    .describe("r", "static root, such as `http://i2.dpfile.com/mod`")
     .alias("V", "verbose")
     .describe("V")
     .alias("v", "version")
@@ -19,7 +17,6 @@ var program = require('optimist')
     .describe("h");
 
 var argv = program.argv;
-var gaze = require('gaze');
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
@@ -43,7 +40,7 @@ var readPackage = readPackageJson.get_original_package;
 var Adapter = loadModule("adapter", argv.mode);
 var Reporter = loadModule("reporter", argv.reporter);
 
-function buildPage(file, destPath) {
+function buildPage(file) {
     return function(done) {
         readPackage(cwd, function(err, pkg) {
             if (err) {
@@ -53,38 +50,33 @@ function buildPage(file, destPath) {
                 mode: mode,
                 pkg: pkg,
                 file: file,
-                destPath: destPath,
                 targetVersion: "latest",
+                adapter: Adapter,
                 cwd: cwd
             }, argv), function(err, result) {
-                done(err, result && result.path);
+                done(err, result);
             });
         });
     }
 }
 
-function testPage(htmlpath, done) {
+function testPage(url, done) {
     var option = _.extend({
         cwd: cwd,
-        path: htmlpath,
+        url: url,
         app: require(path.join(cwd, 'package.json')).name
     }, argv);
-    var test;
 
-    if (mode == "local") {
-        Adapter.test(option);
-        done();
-    } else {
-        test = new Adapter(option).on('error', function(err) {
-            logger.error(err);
-        }).on('log', function(info) {
-            logger.verbose(info);
-        }).test();
-        var reporter = new Reporter(test);
-        reporter.once("done", function(fail) {
-            done(fail);
-        });
-    }
+    var test = new Adapter.runner(option).on('error', function(err) {
+        logger.error(err);
+    }).on('log', function(info) {
+        logger.verbose(info);
+    }).run();
+
+    var reporter = new Reporter(test);
+    reporter.once("done", function(fail) {
+        done(fail);
+    });
 }
 
 
@@ -157,32 +149,20 @@ logger.info("cortex test in %s mode", mode);
 
 getTestFiles(function(err, matches) {
     async.mapSeries(matches, function(file, done) {
-            var built_html = null;
             logger.info("Testing", path.relative(cwd, file));
-            buildPage(file)(function(err, htmlpath) {
+            buildPage(file)(function(err, url) {
                 if (err) {
                     return done(err);
                 }
-                built_html = htmlpath;
-                testPage(htmlpath, done);
+                testPage(url, done);
             });
-            if (mode == "local") {
-                gaze(file, function() {
-                    this.on('changed', function() {
-                        console.log("changed", file);
-                        built_html && buildPage(file, built_html)(function(err) {});
-                    });
-                });
-            }
         },
         function(err) {
             if (err) {
                 logger.error(err.stack || err.message || err);
                 process.exit(1);
             } else {
-                if (mode !== "local") {
-                    process.exit(0);
-                }
+                process.exit(0);
             }
         });
 });

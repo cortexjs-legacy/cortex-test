@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title><%- name %></title>
-    <% if(locals.mode == "local"){ %>
-
     <script src="assets/mocha.js"></script>
     <script src="assets/neuron-5.0.0.js"></script>
     <script>
@@ -14,19 +12,6 @@
         });
     </script>
     <link rel="stylesheet" href="assets/mocha.css">
-
-    <% }else{ %>
-
-    <script src="<%= root %>/mocha/1.18.2/mocha.js"></script>
-    <script src="<%= root %>/neuron/5.0.0/neuron.js"></script>
-    <script>
-        neuron.config({
-            path:"<%= root %>"
-        });
-    </script>
-    <link rel="stylesheet" href="<%= root %>/mocha/1.18.2/mocha.css">
-
-    <% } %>
 </head>
 <body>
     <div id="mocha"></div>
