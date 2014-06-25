@@ -30,7 +30,7 @@
     "jsonfile": "^1.1.1",
     "localtunnel": "^1.3.0",
     "mkdirp": "^0.5.0",
-    "neuron-builder": "^1.0.1",
+    "neuron-builder": "^1.1.0",
     "neuron-tree": "^1.0.0",
     "optimist": "^0.6.1",
     "read-cortex-json": "^2.2.1",
