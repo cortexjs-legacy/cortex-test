@@ -25,7 +25,7 @@ var jf = require('jsonfile');
 var async = require('async');
 var _ = require('underscore');
 var glob = require('glob');
-var readPackageJson = require("read-cortex-json");
+var cortexJson = require("read-cortex-json");
 
 var tests = argv._.length ? argv._ : ["test"];
 
@@ -35,7 +35,7 @@ var builder = require("./lib/builder");
 
 var mode = argv.mode;
 
-var readPackage = readPackageJson.get_original_package;
+var readPackage = cortexJson.read;
 
 var Adapter = loadModule("adapter", argv.mode);
 var Reporter = loadModule("reporter", argv.reporter);
