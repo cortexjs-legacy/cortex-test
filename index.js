@@ -50,7 +50,6 @@ function buildPage(file) {
                 mode: mode,
                 pkg: pkg,
                 file: file,
-                targetVersion: "latest",
                 adapter: Adapter,
                 cwd: cwd
             }, argv), function(err, result) {
