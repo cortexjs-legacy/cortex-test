@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "run test for cortex projects",
   "main": "lib/index.js",
   "scripts": {
@@ -37,7 +37,8 @@
     "shrinked": "^0.1.4",
     "temp": "^0.7.0",
     "underscore": "^1.6.0",
-    "winston": "^0.7.3"
+    "winston": "^0.7.3",
+    "neuronjs": "~6.3.0"
   },
   "devDependencies": {
     "connect": "^2.15.0",
