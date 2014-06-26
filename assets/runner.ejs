@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title><%- name %></title>
     <script src="node_modules/mocha/mocha.js"></script>
-    <script src="node_modules/neuron/dist/neuron.js"></script>
+    <script src="/neuron/6.1.1/neuron.js"></script>
     <script>
         var global = window;
         neuron.config({
@@ -13,7 +13,7 @@
             loaded:["<%- name %>@<%- version %>"]
         });
     </script>
-    <link rel="stylesheet" href="node_modules/mocha//mocha.css">
+    <link rel="stylesheet" href="node_modules/mocha/mocha.css">
 </head>
 <body>
     <div id="mocha"></div>
