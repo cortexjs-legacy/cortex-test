@@ -23,7 +23,6 @@
     "colors": "^0.6.2",
     "connect": "^2.15.0",
     "cortex-profile": "^1.1.1",
-    "cortex-shrinkwrap": "^1.1.1",
     "ejs": "^0.8.8",
     "express": "^4.4.3",
     "glob": "^3.2.9",
@@ -38,7 +37,8 @@
     "temp": "^0.7.0",
     "underscore": "^1.6.0",
     "winston": "^0.7.3",
-    "neuronjs": "~6.3.0"
+    "neuronjs": "~6.3.0",
+    "cortex-shrinkwrap": "~2.1.2"
   },
   "devDependencies": {
     "connect": "^2.15.0",
