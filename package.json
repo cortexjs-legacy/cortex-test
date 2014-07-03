@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "run test for cortex projects",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,6 @@
     "colors": "^0.6.2",
     "connect": "^2.15.0",
     "cortex-profile": "^1.1.1",
-    "ejs": "^0.8.8",
     "express": "^4.4.3",
     "glob": "^3.2.9",
     "jsonfile": "^1.1.1",
