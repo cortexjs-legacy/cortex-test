@@ -41,5 +41,6 @@ cortexTest(_.extend({
     reporter: argv.reporter
 },argv))
 .test(tests)
+.on('complete',process.exit)
 .on('error',die)
 .on('log',logger.info);
