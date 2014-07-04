@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title><%= name %></title>
-    <script src="node_modules/mocha/mocha.js"></script>
-    <script src="/neuron/<%= neuron_version %>/neuron.js"></script>
+    <script src="/mocha/mocha.js"></script>
+    <script src="./neurons/neuron.js"></script>
     <script>
         var global = window;
         neuron.config({
@@ -13,7 +13,7 @@
             loaded:["<%= name %>@<%= version %>"]
         });
     </script>
-    <link rel="stylesheet" href="node_modules/mocha/mocha.css">
+    <link rel="stylesheet" href="/mocha/mocha.css">
 </head>
 <body>
     <div id="mocha"></div>
@@ -22,12 +22,8 @@
 
     mocha.NO_CATCH_EXCEPTIONS = true;
     !window.PHANTOMJS && mocha.setup("bdd");
-    <%= scripts.join("\n") %>
-    define("<%= name %>@<%= version %>/test",["<%= test %>"],function(require, exports, module){
-        require("<%= test %>");
-    });
-
-    _use("<%= name %>@<%= version %>/test",function(){
+    <%= scripts %>
+    _use("<%= name %>@<%= version %>",function(){
         mocha.run();
     });
 

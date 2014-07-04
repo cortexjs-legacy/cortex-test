@@ -30,10 +30,16 @@ if (argv.help) {
 
 var tests = argv._.length ? argv._ : ["test"];
 
+function die(err){
+    logger.error(err.stack || err.message || err);
+    process.exit(1);
+}
+
 cortexTest(_.extend({
     cwd: argv.cwd || process.cwd(),
     mode: argv.mode,
     reporter: argv.reporter
-},argv)).test(tests)
-.on('error',logger.error)
+},argv))
+.test(tests)
+.on('error',die)
 .on('log',logger.info);
