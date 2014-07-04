@@ -89,4 +89,4 @@ emits when error occurs
 
 ###Event:'complete'
 
-emits when all tests done
+emits when test done in all browsers
