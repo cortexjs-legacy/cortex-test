@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "run test for cortex projects",
   "main": "lib/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/cortexjs/cortex-test/issues"
   },
-  "keywords":[
+  "keywords": [
     "browser",
     "test",
     "cortex"
@@ -31,7 +31,6 @@
     "glob": "^3.2.9",
     "localtunnel": "^1.3.0",
     "mkdirp": "^0.5.0",
-    "neuron-builder": "^1.1.0",
     "neuron-tree": "^1.0.0",
     "optimist": "^0.6.1",
     "read-cortex-json": "^2.2.1",
@@ -39,8 +38,9 @@
     "temp": "^0.7.0",
     "underscore": "^1.6.0",
     "winston": "^0.7.3",
-    "neuronjs": "~6.3.0",
-    "cortex-shrinkwrap": "~2.1.2"
+    "cortex-shrinkwrap": "~2.1.2",
+    "neuron-builder": "~3.0.4",
+    "neuronjs": "~7.0.2"
   },
   "devDependencies": {
     "connect": "^2.15.0",
