@@ -9,7 +9,7 @@
         var global = window;
         neuron.config({
             path:"neurons",
-            tree: <%= JSON.stringify(tree) %>,
+            graph: <%= JSON.stringify(graph) %>,
             loaded:["<%= name %>@<%= version %>"]
         });
     </script>

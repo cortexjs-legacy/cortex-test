@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "run test for cortex projects",
   "main": "lib/index.js",
   "scripts": {
@@ -34,11 +34,11 @@
     "read-cortex-json": "~2.3.0",
     "underscore": "^1.6.0",
     "winston": "^0.7.3",
-    "neuron-builder": "~3.2.3",
-    "neuronjs": "~7.0.2",
     "open": "0.0.5",
-    "neuron-tree": "~2.0.1",
-    "mocha": "^1.18.2"
+    "mocha": "^1.18.2",
+    "neuron-graph": "~0.2.0",
+    "neuronjs": "~8.0.1",
+    "neuron-builder": "~4.0.1"
   },
   "devDependencies": {
     "connect": "^2.15.0",
