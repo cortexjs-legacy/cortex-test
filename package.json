@@ -36,9 +36,8 @@
     "winston": "^0.7.3",
     "open": "0.0.5",
     "mocha": "^1.18.2",
-    "neuron-graph": "~0.2.0",
-    "neuronjs": "~8.0.1",
-    "neuron-builder": "~4.0.1"
+    "demo-maker": "~0.1.0",
+    "demo-maker-cortex-test": "~0.1.0"
   },
   "devDependencies": {
     "connect": "^2.15.0",
