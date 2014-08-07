@@ -37,7 +37,8 @@
     "open": "0.0.5",
     "mocha": "^1.18.2",
     "demo-maker": "~0.1.0",
-    "demo-maker-cortex-test": "~0.1.0"
+    "demo-maker-cortex-test": "~0.1.0",
+    "js-yaml": "~3.1.0"
   },
   "devDependencies": {
     "connect": "^2.15.0",

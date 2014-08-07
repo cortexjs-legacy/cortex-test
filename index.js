@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 var _ = require('underscore');
+var fs = require('fs');
+var path = require('path');
 var program = require('optimist')
     .usage('test your cortex module against multi browsers')
     .alias("R", "reporter")
@@ -14,6 +16,8 @@ var program = require('optimist')
     .describe("h");
 
 var argv = program.argv;
+var yaml = require('js-yaml');
+
 var cortexTest = require('./lib/');
 var logger = require('./lib/logger');
 
@@ -35,11 +39,24 @@ function die(err){
     process.exit(1);
 }
 
-cortexTest(_.extend({
+var cwd = argv.cwd || process.cwd();
+
+var project_configs = {};
+try {
+  project_configs = yaml.safeLoad(fs.readFileSync( path.join(cwd, ".cortextest.yml") , 'utf8'));
+} catch (e) {
+    console.log(e);
+  project_configs = {};
+}
+
+var args = _.extend({
     cwd: argv.cwd || process.cwd(),
     mode: argv.mode,
     reporter: argv.reporter
-},argv))
+},project_configs);
+args = _.extend(args,argv);
+
+cortexTest(args)
 .test(tests)
 .on('complete',process.exit)
 .on('error',die)
