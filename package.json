@@ -1,6 +1,6 @@
 {
   "name": "cortex-test",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "run test for cortex projects",
   "main": "lib/index.js",
   "scripts": {
